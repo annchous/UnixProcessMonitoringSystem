@@ -34,7 +34,6 @@ class Log {
 		close(names_fd);
 		pointers.push_back(last_ptr);
 		*last_ptr = 0;
-		printf("MEM INIT\n");
 		for(int i = 0; i < filenames.size(); i++)
 		{
 			memcpy(names_ptr, filenames[i].c_str(), filenames[i].size());
@@ -49,7 +48,6 @@ class Log {
 			close(shm_fd);
 			pointers.push_back(ptr);
 		}
-		write(1, "NAMES\n", 6);
 		*names_ptr = 0;
 		int comm[2];
 		pipe(comm);
@@ -59,20 +57,17 @@ class Log {
 		{
 			dup2(comm[1], 1);
 			close(comm[0]);
-			int exec_res = execlp("./logger.exe", "logger.exe", 0);
+			int exec_res = execlp("./logger.exe", "logger.exe", nullptr);
+			if (exec_res != 0)
+				perror("EXEC");
 		}
 		close(comm[1]);
-		write(1, "FORK1\n", 6);
-		write(1, "OUT\n", 4);
-		char buff[5];
-		int result = read(comm[0], buff, 5);
-		write(1, buff, 5);
-		write(1, "\n", 1);
+		wait(NULL);
+		read(comm[0], &logger_pid, 4);
 	}
 	void write_message(const std::string& message, int log_num) {
 		while(__sync_val_compare_and_swap(last_ptr, 0, log_num) != 0)
 		{}
-		write(1, "VALCHG\n", 7);
 		memcpy((char*)pointers[log_num], message.c_str(), message.size());
 		*((char*)pointers[log_num] + message.size()) = 0;
 		kill(logger_pid, SIGUSR1);
@@ -100,9 +95,13 @@ int main()
 	logger.write_message("Testing log number 2\n", 2);
 	logger.write_message("Testing log number 3\n", 3);
 	logger.write_message("Testing log number 4\n", 4);
+	sleep(10);
 	logger.write_message("Other Testing log number 1 again\n", 1);
+	sleep(10);
 	logger.write_message("Other Testing log number 2 again\n", 2);
+	sleep(10);
 	logger.write_message("Other Testing log number 3 again\n", 3);
+	sleep(10);
 	logger.write_message("Other Testing log number 4 again\n", 4);
 	
 }

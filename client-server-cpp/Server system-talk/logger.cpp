@@ -93,8 +93,14 @@ int main(int argc, char** argv) {
 	while(signal(SIGUSR1, sighandler)!= sighandler)
 	{
 	}
-	write(1, "READY", 5);
+	int f_res = fork();
+	if (f_res != 0)
+	{
+		write(1, &f_res, 4);
+		return 0;
+	}
 	close(1);
+	setsid();
 	while(true)
 	{
 		if (newEvent)
