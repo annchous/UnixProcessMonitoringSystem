@@ -1,27 +1,7 @@
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/shm.h>
-#include <sys/stat.h>
-#include <sys/mman.h>
-#include <signal.h>
-#include <fcntl.h>
-#include <string.h>
-#include <string>
-#include <vector>
-#include <unordered_set>
-#include <kvm.h>
-#include <dirent.h>
-#include <sys/sysctl.h>
-#include <sys/socket.h>
-#include <sys/proc.h>
-#include <sys/param.h>
-#include <libprocstat.h>
-#include <sys/user.h>
-#include <sys/wait.h>
+#include "logger_wrapper.hpp"
 
-class Log {
-	public:
-	Log(const std::vector<std::string>& filenames){
+Log::Log(const std::vector<std::string>& filenames){
+		good = true;
 		int last_fd, names_fd;
 		char* names_ptr;
 		last_fd = shm_open("/LOG_LAST", O_CREAT | O_RDWR, 0666);
@@ -57,31 +37,54 @@ class Log {
 		{
 			dup2(comm[1], 1);
 			close(comm[0]);
-			int exec_res = execlp("./logger.exe", "logger.exe", nullptr);
+			int exec_res = execlp("./logger", "logger", nullptr);
 			if (exec_res != 0)
-				perror("EXEC");
+				{
+					die();
+					exit(-1);
+					return;
+				}
 		}
 		close(comm[1]);
-		wait(NULL);
+		int ret_res;
+		if (wait(&ret_res) == -1)
+			{
+				die();
+				return;
+			}
+		if (WIFEXITED(ret_res) != 0)
+			if (WEXITSTATUS(ret_res)!= 0)
+			{
+			die();
+			return;
+		}
 		read(comm[0], &logger_pid, 4);
 	}
-	void write_message(const std::string& message, int log_num) {
+	int Log::write_message(const std::string& message, int log_num) {
+		if(!good)
+			return -1;
 		while(__sync_val_compare_and_swap(last_ptr, 0, log_num) != 0)
 		{}
 		memcpy((char*)pointers[log_num], message.c_str(), message.size());
 		*((char*)pointers[log_num] + message.size()) = 0;
 		kill(logger_pid, SIGUSR1);
+		return 0;
 		}
-	~Log() {
+	void Log::die() {
+		good = false;
+		munmap(last_ptr, 8);
+		for (int i = 1; i < pointers.size(); i++)
+			munmap(pointers[i], 1024);
+		}
+	Log::~Log() {
+		if (good)
+		{
 		kill(logger_pid, SIGTERM);
+		die();
 		int ret;
 		wait(&ret);
 	}
-	private:
-	int* last_ptr;
-	std::vector<void*> pointers;
-	int logger_pid;
-};
+	}
 
 int main()
 {
@@ -95,13 +98,9 @@ int main()
 	logger.write_message("Testing log number 2\n", 2);
 	logger.write_message("Testing log number 3\n", 3);
 	logger.write_message("Testing log number 4\n", 4);
-	sleep(10);
 	logger.write_message("Other Testing log number 1 again\n", 1);
-	sleep(10);
 	logger.write_message("Other Testing log number 2 again\n", 2);
-	sleep(10);
 	logger.write_message("Other Testing log number 3 again\n", 3);
-	sleep(10);
 	logger.write_message("Other Testing log number 4 again\n", 4);
 	
 }
