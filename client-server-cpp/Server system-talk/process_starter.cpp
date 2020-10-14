@@ -1,12 +1,6 @@
-#include <unistd.h>
-#include <string>
-#include <stdio.h>
-#include <sys/wait.h>
-#include <vector>
+#include "process_starter.hpp"
 
-class Process {
-	public:
-		int run(bool need_wait, int UID, const std::string& command,
+		int Process::run(bool need_wait, int UID, const std::string& command,
 		const std::vector<std::string>& arguments, int *stdout_fd, int *err_fd)
 		{
 			int pipe_fd[2];
@@ -72,8 +66,7 @@ class Process {
 			else
 				return 0;
 		}
-		
-};
+
 
 int main () {
 	Process test;
