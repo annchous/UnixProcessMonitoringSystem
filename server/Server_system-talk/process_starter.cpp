@@ -67,7 +67,7 @@
 				return 0;
 		}
 
-
+/*
 int main () {
 	Process test;
 	int fd, err;
@@ -97,3 +97,4 @@ int main () {
 	printf("Exit code: %d\n", result);
 	return result;
 }
+*/
