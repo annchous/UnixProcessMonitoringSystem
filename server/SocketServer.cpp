@@ -18,7 +18,6 @@ public:
             exit(EXIT_FAILURE);
         }
 
-        sockaddr_in sockaddr;
         sockaddr.sin_family = AF_INET;
         sockaddr.sin_addr.s_addr = INADDR_ANY;
         sockaddr.sin_port = htons(port);

@@ -2,6 +2,15 @@
 #include <vector>
 #include <sstream>
 
+std::vector<std::string> split(std::string str, char regex) {
+    std::vector<std::string> vect;
+    std::stringstream ss(str);
+    while (getline(ss, str, regex)) {
+        vect.push_back(str);
+    }
+    return vect;
+}
+
 enum RequestType {
     GET,
     PUT,
@@ -12,6 +21,7 @@ enum RequestType {
 struct RequestBody {
     RequestType requestType{};
     std::vector<std::string> args{};
+    std::string body;
 };
 
 class RequestParser {
@@ -28,14 +38,5 @@ public:
         tmp.erase(tmp.begin());
         requestBody.args = tmp;
         return requestBody;
-    }
-private:
-    std::vector<std::string> split(std::string str, char regex) {
-        std::vector<std::string> vect;
-        std::stringstream ss(str);
-        while (getline(ss, str, regex)) {
-            vect.push_back(str);
-        }
-        return vect;
     }
 };
