@@ -21,12 +21,11 @@ public:
 	MainController(int _port)
 		: port(_port)
 		, work(true)
-		,  server(Server(port))
 	{}
 	
     void run() 
     {
-        
+        Server server = Server(port);
         server.accept();
         while (true) 
         {	
@@ -40,13 +39,14 @@ public:
             if (!work)
 				break;
             
+            std::cout << "Checkpoint: after work checking\n";
             RequestBody body = parser.parse(request);
-            
+            std::cout << "Checkpoint: after parsing\n";
             // Running processes
             if (body.requestType == POST && body.args[0] == "process") 
             {
 				std::cout << "Checkpoint: before run_process\n";
-                int pid = run_process(body);
+                int pid = run_process(body, server);
                 std::cout << "Checkpoint: after run_process\n";
                 if(pid == -1)
                     server.write(get_response(FAILED));
@@ -61,7 +61,6 @@ private:
 	int port;
 	bool work;
 	char client_request[100];
-	Server server;
     Process process = Process();
     RequestParser parser = RequestParser();
     
@@ -75,13 +74,9 @@ private:
         return "Oops! Something went wrong...\n";
     }
 
-    int run_process(RequestBody requestBody) {
-<<<<<<< HEAD
+    int run_process(RequestBody requestBody, Server server) {
 		server.write("Enter argumets: ");
-        std::vector<std::string> args = split(requestBody.body, ',');
-=======
         std::vector<std::string> args = RequestParser::split(requestBody.body, ',');
->>>>>>> 15b819eeeca2e8351b3f02dbbdb21672d9c2f88c
         bool is_waiting;
         std::cout << "Checkpoint!\n";
         if (requestBody.args[1] == "true") 

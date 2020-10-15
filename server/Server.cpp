@@ -51,8 +51,7 @@ public:
 
     std::string read() const {
         char buffer[100];
-        if (recv(connection, buffer, 100, 0) < 0)
-			std::cerr << "Receiving failed\n";
+        ::read(connection, buffer, 100);
         return std::string(buffer);
     }
 

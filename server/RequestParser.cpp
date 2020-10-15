@@ -1,6 +1,5 @@
 #include <string>
 #include <vector>
-<<<<<<< HEAD
 #include <sstream>
 
 std::vector<std::string> split(std::string str, char sym) {
@@ -25,8 +24,6 @@ std::vector<std::string> split(std::string str, char sym) {
 	
     return vect;
 }
-=======
->>>>>>> 15b819eeeca2e8351b3f02dbbdb21672d9c2f88c
 
 enum RequestType {
     GET,
@@ -45,11 +42,7 @@ class RequestParser {
 public:
     RequestBody parse(const std::string& request) {
         std::vector<std::string> out = split(request, ' ');
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 15b819eeeca2e8351b3f02dbbdb21672d9c2f88c
         if(out.size() != 3)
             throw std::exception();
         
