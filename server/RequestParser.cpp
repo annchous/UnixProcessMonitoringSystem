@@ -1,31 +1,5 @@
 #include <string>
 #include <vector>
-#include <sstream>
-
-std::vector<std::string> split(std::string str, char sym) {
-    std::vector<std::string> vect;
-    std::string tmp;
-    std::cout << str << std::endl;
-    for (int i = 0; i < str.length(); ++i)
-    {
-		if (str[i] == sym)
-		{
-			vect.push_back(tmp);
-			std::cout << tmp << std::endl;
-			tmp = "";
-			continue;
-		}
-		else
-		{
-			tmp += str[i];
-		}
-	}
-	
-	if (tmp != "") vect.push_back(tmp);
-	std::cout << vect.size() << std::endl;
-	
-    return vect;
-}
 
 enum RequestType {
     GET,
@@ -44,11 +18,9 @@ class RequestParser {
 public:
     RequestBody parse(const std::string& request) {
         std::vector<std::string> out = split(request, ' ');
-        
-        std::cout << "Checkpoint!\n";
+
         if(out.size() != 3)
             throw std::exception();
-        std::cout << "Checkpoint 2!\n";
         
         RequestBody requestBody;
         if(out[0] == "GET") 
@@ -63,5 +35,23 @@ public:
         requestBody.args = tmp;
         
         return requestBody;
+    }
+
+    static std::vector<std::string> split(std::string str, char sym) {
+        std::vector<std::string> vect;
+        std::string tmp;
+        for (char i : str){
+            if (i == sym) {
+                vect.push_back(tmp);
+                tmp = "";
+                continue;
+            } else {
+                tmp += i;
+            }
+        }
+
+        if (!tmp.empty()) vect.push_back(tmp);
+
+        return vect;
     }
 };
