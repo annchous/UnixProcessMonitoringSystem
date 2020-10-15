@@ -59,12 +59,16 @@ public:
                 std::cout << "Checkpoint: before run_process\n";
 
                 std::cout << "Checkpoint: before run_process\n";
-                int pid = run_process(body, server);
+                int proc_id = run_process(body, server);
                 std::cout << "Checkpoint: after run_process\n";
-                if (pid == -1)
+                if (proc_id == -1)
                     server.write(get_response(FAILED));
                 else
                     server.write(get_response(OK));
+            }
+
+            if(body.requestType == GET && body.args[0] == "ps") {
+                get_processes(monitor, server);
             }
         }
     }
