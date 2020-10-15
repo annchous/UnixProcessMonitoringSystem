@@ -39,40 +39,32 @@ public:
         close(1);
         close(2);
         setsid();
-
         while (true) {
             std::string request = server.read();
 
-            Server server = Server(port);
-            server.accept();
-            while (true) {
-                std::string request = server.read();
+            if (request == "shutdown") {
+                signal_handler(SIGTERM);
+                server.write("Message: terminating signal was called");
+            }
 
-                if (request == "shutdown") {
-                    signal_handler(SIGTERM);
-                    server.write("Message: terminating signal was called");
-                }
-
-                if (!work)
-                    break;
+            if (!work)
+                break;
 
 
-                std::cout << "Checkpoint: after work checking\n";
-                RequestBody body = parser.parse(request);
-                std::cout << "Checkpoint: after parsing\n";
-                // Running processes
-                if (body.requestType == POST && body.args[0] == "process") {
-                    std::cout << "Checkpoint: before run_process\n";
+            std::cout << "Checkpoint: after work checking\n";
+            RequestBody body = parser.parse(request);
+            std::cout << "Checkpoint: after parsing\n";
+            // Running processes
+            if (body.requestType == POST && body.args[0] == "process") {
+                std::cout << "Checkpoint: before run_process\n";
 
-                    std::cout << "Checkpoint: before run_process\n";
-                    int pid = run_process(body, server);
-                    std::cout << "Checkpoint: after run_process\n";
-                    if (pid == -1)
-                        server.write(get_response(FAILED));
-                    else
-                        server.write(get_response(OK));
-                }
-
+                std::cout << "Checkpoint: before run_process\n";
+                int pid = run_process(body, server);
+                std::cout << "Checkpoint: after run_process\n";
+                if (pid == -1)
+                    server.write(get_response(FAILED));
+                else
+                    server.write(get_response(OK));
             }
         }
     }
