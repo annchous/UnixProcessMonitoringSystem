@@ -3,4 +3,7 @@ project(.)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(OSLab2 SocketServer.cpp)
+add_executable(OSLab2 Server.cpp
+        RequestParser.cpp
+        main.cpp
+        MainController.cpp)

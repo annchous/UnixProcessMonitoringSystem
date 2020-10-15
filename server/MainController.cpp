@@ -1,7 +1,7 @@
 #include "Server.cpp"
 #include "RequestParser.cpp"
 #include "Server_system-talk/process_starter.cpp"
-#include <sys/signal.h>
+#include <csignal>
 
 enum ResponseType {
     OK = 200,
@@ -76,8 +76,12 @@ private:
     }
 
     int run_process(RequestBody requestBody) {
+<<<<<<< HEAD
 		server.write("Enter argumets: ");
         std::vector<std::string> args = split(requestBody.body, ',');
+=======
+        std::vector<std::string> args = RequestParser::split(requestBody.body, ',');
+>>>>>>> 15b819eeeca2e8351b3f02dbbdb21672d9c2f88c
         bool is_waiting;
         std::cout << "Checkpoint!\n";
         if (requestBody.args[1] == "true") 
@@ -100,10 +104,3 @@ private:
 			work = false;
 	}
 };
-
-int main(int argc, char *argv[])
-{
-	MainController controller(8080);
-	controller.run();
-	return 0;
-}
