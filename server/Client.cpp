@@ -57,6 +57,16 @@ public:
 		close(sock);
 	}
 	
+	void write(const std::string& str) const {
+        ::write(connection, str.c_str(), str.size());
+    }
+	
+	std::string read() const {
+        char buffer[100];
+        auto bytesRead = ::read(connection, buffer, 100);
+        return std::string(buffer);
+    }
+    
 private:
 	int sock;
 	struct sockaddr_in server;

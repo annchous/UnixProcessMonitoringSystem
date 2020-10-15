@@ -20,6 +20,7 @@ public:
 
 	MainController(int _port)
 		: port(_port)
+		, work(true)
 	{}
 	
     void run() 
@@ -29,7 +30,7 @@ public:
         while (true) 
         {			
             std::string request = server.read();
-            
+            std::cout << request << std::endl;
             if (request == "shutdown") {
                 signal_handler(SIGTERM);
                 server.write("Message: terminating signal was called");
@@ -38,8 +39,9 @@ public:
             if (!work)
 				break;
             
+            std::cout << "You are here now\n";
             RequestBody body = parser.parse(request);
-            
+            std::cout << "You are here now 2\n";
             // Running processes
             if (body.requestType == POST && body.args[0] == "process") 
             {

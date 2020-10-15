@@ -50,7 +50,8 @@ public:
 
     std::string read() const {
         char buffer[100];
-        auto bytesRead = ::read(connection, buffer, 100);
+        auto bytesRead = ::recv(connection, buffer, 100, 0);
+        printf("%s", buffer);
         return std::string(buffer);
     }
 
