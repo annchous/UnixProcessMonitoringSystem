@@ -30,7 +30,8 @@ public:
 		while (true)
 		{
 			std::cout << "Enter command: ";
-			std::cin >> client_message;
+			scanf("%s", client_message);
+			printf("%s", client_message);
 		
 			if (send(sock, client_message, 100, 0) < 0)
 			{
@@ -56,16 +57,6 @@ public:
 	
 		close(sock);
 	}
-	
-	void write(const std::string& str) const {
-        ::write(connection, str.c_str(), str.size());
-    }
-	
-	std::string read() const {
-        char buffer[100];
-        auto bytesRead = ::read(connection, buffer, 100);
-        return std::string(buffer);
-    }
     
 private:
 	int sock;
@@ -90,7 +81,6 @@ private:
 	{
 		std::cerr << "Error: Connection failed\n";
 		return false;
-		//exit(0);
 	}
 		std::cout << "Connected\n";
 		return true;

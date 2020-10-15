@@ -7,10 +7,13 @@
 class Server 
 {
 private:
-    int port, addrlen;
-    sockaddr_in sockaddr;
+    int port;
+    int addrlen = sizeof(struct sockaddr_in);
+    struct sockaddr_in serveraddr; 
+    struct sockaddr_in clientaddr;
     int sockfd;
     int connection;
+    
 public:
     Server(int port) 
 		: port(port) 
@@ -22,11 +25,11 @@ public:
         }
         std::cout << "Socket was created\n";
 
-        sockaddr.sin_family = AF_INET;
-        sockaddr.sin_addr.s_addr = INADDR_ANY;
-        sockaddr.sin_port = htons(port);
+        serveraddr.sin_family = AF_INET;
+        serveraddr.sin_addr.s_addr = INADDR_ANY;
+        serveraddr.sin_port = htons(port);
 
-        if (bind(sockfd, (struct sockaddr*)&sockaddr, sizeof(sockaddr)) < 0) {
+        if (bind(sockfd, (struct sockaddr*)&serveraddr, sizeof(serveraddr)) < 0) {
             std::cout << "Error: Failed to bind to port " << port << ". errno: " << errno << std::endl;
             exit(EXIT_FAILURE);
         }
@@ -36,12 +39,10 @@ public:
             std::cout << "Failed to listen on socket. errno: " << errno << std::endl;
             exit(EXIT_FAILURE);
         }
-
-        addrlen = sizeof(sockaddr);
     }
 
     void accept() {
-        connection = ::accept(sockfd, (struct sockaddr*)&sockaddr, (socklen_t*)&addrlen);
+        connection = ::accept(sockfd, (struct sockaddr*)&clientaddr, (socklen_t*)&addrlen);
         if (connection < 0) {
             std::cout << "Failed to grab connection. errno: " << errno << std::endl;
             exit(EXIT_FAILURE);
@@ -50,12 +51,17 @@ public:
 
     std::string read() const {
         char buffer[100];
-        auto bytesRead = ::recv(connection, buffer, 100, 0);
-        printf("%s", buffer);
+        if (recv(connection, buffer, 100, 0) < 0)
+			std::cerr << "Receiving failed\n";
         return std::string(buffer);
     }
 
     void write(const std::string& str) const {
         ::write(connection, str.c_str(), str.size());
     }
+    
+    int getConnectionSocket()
+    {
+		return connection;
+	}
 };

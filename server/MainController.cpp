@@ -28,9 +28,13 @@ public:
         Server server(port);
         server.accept();
         while (true) 
-        {			
-            std::string request = server.read();
+        {	
+			client_request[0] = 0;
+			recv(server.getConnectionSocket(), client_request, 100, 0);
+			std::cout << client_request << std::endl;
+            std::string request(client_request);
             std::cout << request << std::endl;
+            
             if (request == "shutdown") {
                 signal_handler(SIGTERM);
                 server.write("Message: terminating signal was called");
@@ -58,6 +62,7 @@ private:
 
 	int port;
 	bool work;
+	char client_request[100];
     Process process = Process();
     RequestParser parser = RequestParser();
     
