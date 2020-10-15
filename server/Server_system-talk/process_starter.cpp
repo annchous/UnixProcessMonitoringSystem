@@ -1,6 +1,6 @@
 #include "process_starter.hpp"
 
-		int Process::run(bool need_wait, int UID, const std::string& command,
+		int Runnable::run(bool need_wait, int UID, const std::string& command,
 		const std::vector<std::string>& arguments, int *stdout_fd, int *err_fd)
 		{
 			int pipe_fd[2];

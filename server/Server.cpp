@@ -1,8 +1,9 @@
-#include <sys/socket.h> // For socket functions
-#include <netinet/in.h> // For sockaddr_in
-#include <cstdlib> // For exit() and EXIT_FAILURE
-#include <iostream> // For cout
-#include <unistd.h> // For read
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <cstdlib>
+#include <iostream>
+#include <unistd.h>
+#include <signal.h>
 
 class Server 
 {
@@ -13,11 +14,11 @@ private:
     struct sockaddr_in clientaddr;
     int sockfd;
     int connection;
-    
+
 public:
-    Server(int port) 
-		: port(port) 
-    {
+
+    Server(int port)
+		: port(port) {
         sockfd = socket(AF_INET, SOCK_STREAM, 0);
         if (sockfd == -1) {
             std::cout << "Error: Failed to create socket. errno: " << errno << std::endl;
@@ -50,8 +51,8 @@ public:
     }
 
     std::string read() const {
-        char buffer[100];
-        if (recv(connection, buffer, 100, 0) < 0)
+        char buffer[300];
+        if (recv(connection, buffer, 300, 0) < 0)
 			std::cerr << "Receiving failed\n";
         return std::string(buffer);
     }
@@ -60,7 +61,7 @@ public:
         ::write(connection, str.c_str(), str.size());
     }
     
-    int getConnectionSocket()
+    int getConnectionSocket() const
     {
 		return connection;
 	}
