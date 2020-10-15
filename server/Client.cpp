@@ -30,8 +30,7 @@ public:
 		while (true)
 		{
 			std::cout << "Enter command: ";
-			scanf("%s", client_message);
-			printf("%s", client_message);
+			gets(client_message);
 		
 			if (send(sock, client_message, 100, 0) < 0)
 			{

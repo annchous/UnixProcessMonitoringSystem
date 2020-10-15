@@ -11,7 +11,6 @@ std::vector<std::string> split(std::string str, char sym) {
 		if (str[i] == sym)
 		{
 			vect.push_back(tmp);
-			std::cout << tmp << std::endl;
 			tmp = "";
 			continue;
 		}
@@ -22,7 +21,6 @@ std::vector<std::string> split(std::string str, char sym) {
 	}
 	
 	if (tmp != "") vect.push_back(tmp);
-	std::cout << vect.size() << std::endl;
 	
     return vect;
 }
@@ -45,10 +43,8 @@ public:
     RequestBody parse(const std::string& request) {
         std::vector<std::string> out = split(request, ' ');
         
-        std::cout << "Checkpoint!\n";
         if(out.size() != 3)
             throw std::exception();
-        std::cout << "Checkpoint 2!\n";
         
         RequestBody requestBody;
         if(out[0] == "GET") 
@@ -59,7 +55,7 @@ public:
 			throw std::exception();
 			
         auto tmp = split(out[1], '/');
-        tmp.erase(tmp.begin());
+        //tmp.erase(tmp.begin());
         requestBody.args = tmp;
         
         return requestBody;

@@ -56,12 +56,18 @@ public:
         return std::string(buffer);
     }
 
-    void write(const std::string& str) const {
+    void write(const std::string& str) const 
+    {
         ::write(connection, str.c_str(), str.size());
     }
     
     int getConnectionSocket()
     {
 		return connection;
+	}
+	
+	void setPort(int port)
+	{
+		this->port = port;
 	}
 };
