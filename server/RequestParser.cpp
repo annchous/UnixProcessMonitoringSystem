@@ -1,5 +1,29 @@
 #include <string>
 #include <vector>
+#include <sstream>
+
+std::vector<std::string> split(std::string str, char sym) {
+    std::vector<std::string> vect;
+    std::string tmp;
+    std::cout << str << std::endl;
+    for (int i = 0; i < str.length(); ++i)
+    {
+		if (str[i] == sym)
+		{
+			vect.push_back(tmp);
+			tmp = "";
+			continue;
+		}
+		else
+		{
+			tmp += str[i];
+		}
+	}
+	
+	if (tmp != "") vect.push_back(tmp);
+	
+    return vect;
+}
 
 enum RequestType {
     GET,
@@ -31,7 +55,7 @@ public:
 			throw std::exception();
 			
         auto tmp = split(out[1], '/');
-        tmp.erase(tmp.begin());
+        //tmp.erase(tmp.begin());
         requestBody.args = tmp;
         
         return requestBody;

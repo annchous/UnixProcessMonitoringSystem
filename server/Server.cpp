@@ -51,18 +51,23 @@ public:
     }
 
     std::string read() const {
-        char buffer[300];
-        if (recv(connection, buffer, 300, 0) < 0)
-			std::cerr << "Receiving failed\n";
+        char buffer[100];
+        ::read(connection, buffer, 100);
         return std::string(buffer);
     }
 
-    void write(const std::string& str) const {
+    void write(const std::string& str) const 
+    {
         ::write(connection, str.c_str(), str.size());
     }
     
     int getConnectionSocket() const
     {
 		return connection;
+	}
+	
+	void setPort(int port)
+	{
+		this->port = port;
 	}
 };

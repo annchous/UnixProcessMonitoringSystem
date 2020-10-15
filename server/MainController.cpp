@@ -25,8 +25,7 @@ public:
             , work(true)
     {}
 
-    void run()
-    {
+    void run() {
         std::vector<std::string> logfiles = {"logs/main.log"};
         Log log(logfiles);
         Monitor monitor = Monitor();
@@ -34,40 +33,47 @@ public:
         server.accept();
 
         int pid = fork();
-        if(pid!=0)
+        if (pid != 0)
             exit(0);
         close(0);
         close(1);
         close(2);
         setsid();
 
-        while (true)
-        {
+        while (true) {
             std::string request = server.read();
 
-            if (request == "shutdown") {
-                signal_handler(SIGTERM);
-                server.write("Message: terminating signal was called");
+            Server server = Server(port);
+            server.accept();
+            while (true) {
+                std::string request = server.read();
+
+                if (request == "shutdown") {
+                    signal_handler(SIGTERM);
+                    server.write("Message: terminating signal was called");
+                }
+
+                if (!work)
+                    break;
+
+
+                std::cout << "Checkpoint: after work checking\n";
+                RequestBody body = parser.parse(request);
+                std::cout << "Checkpoint: after parsing\n";
+                // Running processes
+                if (body.requestType == POST && body.args[0] == "process") {
+                    std::cout << "Checkpoint: before run_process\n";
+
+                    std::cout << "Checkpoint: before run_process\n";
+                    int pid = run_process(body, server);
+                    std::cout << "Checkpoint: after run_process\n";
+                    if (pid == -1)
+                        server.write(get_response(FAILED));
+                    else
+                        server.write(get_response(OK));
+                }
+
             }
-
-            if (!work)
-                break;
-
-            std::cout << "Checkpoint: after work checking\n";
-            RequestBody body = parser.parse(request);
-            std::cout << "Checkpoint: after parsing\n";
-            // Running processes
-            if (body.requestType == POST && body.args[0] == "process")
-            {
-                std::cout << "Checkpoint: before run_process\n";
-                int pid = run_process(body, server);
-                std::cout << "Checkpoint: after run_process\n";
-                if(pid == -1)
-                    server.write(get_response(FAILED));
-                else
-                    server.write(get_response(OK));
-            }
-
         }
     }
 
@@ -103,6 +109,7 @@ private:
     }
 
     int run_process(RequestBody requestBody, Server server) {
+
         server.write("Enter argumets: ");
         std::vector<std::string> args = RequestParser::split(requestBody.body, ',');
         bool is_waiting;
@@ -114,6 +121,7 @@ private:
         else
             return -1;
 
+
         int uid = stoi(args[2]);
         std::string command = args[3];
 
@@ -123,12 +131,7 @@ private:
 
     void signal_handler(int sig)
     {
-        if (sig == SIGTERM)
-            work = false;
-    }
+		if (sig == SIGTERM)
+			work = false;
+	}
 };
-
-int main() {
-    MainController controller(8080);
-    controller.run();
-}
