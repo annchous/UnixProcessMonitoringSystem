@@ -69,6 +69,7 @@ void Monitor::die() {
 	munmap(status_ptr, 8);
 }
 
+/*
 int main() {
 	Monitor test;
 	std::vector<Process> test_data = test.getProcesses();
@@ -77,3 +78,4 @@ int main() {
 		printf("%d\t%.6s\t%.5s\t%.16s\n", test_data[i].PID, test_data[i].start_time, test_data[i].cpu, test_data[i].command);
 	}
 }
+*/

@@ -29,29 +29,30 @@ public:
 	{
 		while (true)
 		{
-			std::cout << "Enter command: ";
-			gets(client_message);
-		
-			if (send(sock, client_message, 100, 0) < 0)
-			{
-				std::cout << "Sending failed\n";
-				exit(0);
-			}
-		
-			/*
-			if (recv(sock, server_message, 100, 0) < 0)
-			{
-				std::cout << "Receiving failed\n";
-				break;
-			}
-			
-			std::cout << server_message << '\n';
-			*/
 			
 			if (recv(sock, server_message, 100, 0) > 0)
-				std::cout << server_message << '\n';
+			{
+				if (strncmp(server_message, "Enter command: ", 100) == 0)
+				{
+					std::cout << server_message;
+					gets(command);
+					send(sock, command, 100, 0);
+				}
+				else if (strncmp(server_message, "Enter arguments: ", 100) == 0)
+				{
+					std::cout << server_message;
+					gets(arguments);
+					send(sock, arguments, 100, 0);
+				}
+				else if (strncmp(server_message, "shutdown", 100) == 0)
+				{
+					std::cout << "Message: terminating signal was called\n";
+					exit(0);
+				}
+				else
+					std::cout << server_message << std::endl;
+			}
 			
-			if (!Connect()) exit(1);
 		}
 	
 		close(sock);
@@ -63,6 +64,8 @@ private:
 	
 	char client_message[100];
 	char server_message[100];
+	char arguments[100];
+	char command[100];
 	
 	void CreateSocket()
 	{

@@ -86,6 +86,7 @@ Log::Log(const std::vector<std::string>& filenames){
 	}
 	}
 
+/*
 int main()
 {
 	std::vector<std::string> files_list;
@@ -104,3 +105,4 @@ int main()
 	logger.write_message("Other Testing log number 4 again\n", 4);
 	
 }
+*/
