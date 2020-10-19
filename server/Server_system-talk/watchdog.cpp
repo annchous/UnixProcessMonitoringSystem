@@ -174,9 +174,9 @@ WatchDog::~WatchDog() {
 		pthread_join(thread, NULL);
 }
 
-int main() {
+/*int main() {
 	WatchDog test;
 	Log logger;
 	test.setWatchdog(8862, logger, 1);
 	sleep(10);
-}
+}*/
